@@ -41,7 +41,7 @@ Issueテンプレートを用意しているので、沿って作成を行いま
 
 ### 進捗状況 
 GitHubの [プロジェクトのBoard](https://github.com/orgs/temp-go-dev/projects/1) 機能を利用して確認ができます。  
-`Issue` や `PullRequest` のステータス遷移に従ってある程度自動的に `Board` が動いてくれますが、  
+`Issue` のステータス遷移に従ってある程度自動的に `Board` が動いてくれますが、  
 完全に自動化にはなっていないため、所々操作が必要になります。
 
 |Column|意味|操作の必要性|
