@@ -38,6 +38,7 @@ Issueテンプレートを用意しているので、沿って作成を行いま
 
 [こちら](https://github.com/temp-go-dev/consider/issues/new/choose) からIssueの作成が行えます。  
 利用するIssueテンプレートは「`considers`」です。
+記載後はプロジェクトに「`consider`」を指定します。
 
 ### 進捗状況 
 GitHubの [プロジェクトのBoard](https://github.com/orgs/temp-go-dev/projects/1) 機能を利用して確認ができます。  
