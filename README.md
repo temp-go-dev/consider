@@ -15,7 +15,8 @@ ADRを用いた検討の進め方は以下のフローとします。
 
 ### ADR
 検討の経緯は残しておくことが重要であるため、[Architecture Decision Record](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions) を用いて管理します。  
-簡潔に言いますと、「検討事項のメモを `Mardown` できちんと残しておく」というだけです。
+簡潔に言いますと、「検討事項のメモを `Mardown` できちんと残しておく」というだけです。  
+画像を入れる場合は、別で作成してリンクになると思います。
 
 #### adr-toolsのインストール
 ADRを残すための支援ツールとして、[adr-tools](https://github.com/npryce/adr-tools) が提供されています。  
