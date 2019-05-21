@@ -27,7 +27,7 @@ Mac / Windows10 / Linux に対応していますので、大抵の環境下で�
 1. `temp-go-dev/consider`をclone
 1. ルート階層にて `adr new {some title}` を実行。`{some title}` は任意の文字列
 1. `####_some_titme.md` が作成される
-
+1. テンプレートが適用された雛形が作成されますが、そこにはあまりこだわらず記載する
 
 
 ## タスク管理
