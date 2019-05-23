@@ -32,3 +32,8 @@ Windowsでの開発環境を想定し、Go言語のバージョン管理方法�
 ### ChocolateyのGolangサイト
 現時点の最新版は存在する(1.12.5)  
 https://chocolatey.org/packages/golang
+
+
+## 結果
+最新のバージョンをリリース直後に利用できるわけではなさそうであるが、  
+chocolateyを利用したGoLangのバージョン管理を行う。
