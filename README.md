@@ -13,6 +13,8 @@ ADRを用いた検討の進め方は以下のフローとします。
 |3|チーム内議論を行う(PullRequest)|`PullRequest`の作成|In Discuss|
 |4|合意|`PullRequest`の`Mearge`、`Issue`のクローズ|Done|
 
+資料を残す際のブランチ戦略は、master/feature のみの運用として全てPullRequestでRv・討議するという形式にしたいと思います。
+
 ### ADR
 検討の経緯は残しておくことが重要であるため、[Architecture Decision Record](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions) を用いて管理します。  
 簡潔に言いますと、「検討事項のメモを `Mardown` できちんと残しておく」というだけです。  
