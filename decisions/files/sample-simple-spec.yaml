@@ -1,0 +1,302 @@
+openapi: 3.0.0
+info:
+  description: simple spec REST-API for sample implementation.
+  version: 1.0.0
+  title: Sample Simple Service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: todo
+    description: TO-DO
+  - name: user
+    description: TO-DO owner users.
+paths:
+  /todos:
+    get:
+      tags:
+        - todo
+      summary: Get TO-DO list.
+      description: get todo list.
+      operationId: list
+      responses:
+        "200":
+          description: todo list response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+  /todos/{id}:
+    post:
+      tags:
+        - todo
+      summary: Create TO-DO
+      description: Create todo.
+      operationId: create
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Todo"
+      responses:
+        "200":
+          description: success response.
+    get:
+      tags:
+        - todo
+      summary: Read TO-DO.
+      description: read todo.
+      operationId: read
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: todo list response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+    put:
+      tags:
+        - todo
+      summary: Update TO-DO
+      description: update todo.
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Todo"
+      responses:
+        "200":
+          description: success response.
+    delete:
+      tags:
+        - todo
+      summary: Delete TO-DO.
+      description: delete todo.
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success delete.
+  /users:
+    get:
+      tags:
+        - user
+      summary: Get user list.
+      description: get user list.
+      operationId: list
+      responses:
+        "200":
+          description: user list response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /users/{id}:
+    post:
+      tags:
+        - user
+      summary: Create TO-DO
+      description: Create todo.
+      operationId: create
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: success response.
+    get:
+      tags:
+        - user
+      summary: Read TO-DO.
+      description: read todo.
+      operationId: read
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: todo list response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      tags:
+        - user
+      summary: Update TO-DO
+      description: update todo.
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: success response.
+    delete:
+      tags:
+        - user
+      summary: Delete TO-DO.
+      description: delete todo.
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: target todo id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success delete.
+components:
+  #securitySchemes:
+  #  petstore_auth:
+  #    type: oauth2
+  #    flows:
+  #      implicit:
+  #        authorizationUrl: http://petstore.swagger.io/oauth/dialog
+  #        scopes:
+  #          write:pets: modify pets in your account
+  #          read:pets: read your pets
+  #  api_key:
+  #    type: apiKey
+  #    name: api_key
+  #    in: header
+  #requestBodies:
+  #  UserArray:
+  #    content:
+  #      application/json:
+  #        schema:
+  #          type: array
+  #          items:
+  #            $ref: "#/components/schemas/User"
+  #    description: List of user object
+  #    required: true
+  #responses:
+    # どうやらここは共通的なレスポンスを定義するところらしい
+    # $ref: "#/components/responses/NotFound"
+    #NotFound:
+    #  description: "not found response."
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: array
+    #        items:
+    #          $ref: "#/components/schemas/ApiResponse"
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          format: int32
+          description: User Status
+      xml:
+        name: User
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: id. use uuid.
+          example: e4926de2-5a70-4a8e-8ceb-35211afe3d42
+        owner:
+          type: string
+          description: owner user id.
+          example: e4926de2-5a70-4a8e-8ceb-35211afe3d42
+        title:
+          type: string
+          description: title.
+          example: title
+        contents:
+          type: string
+          description: contents.
+          example: need do something . 
+        start:
+          type: date-time
+          description: scheduled start date time.
+          example: 2019/01/01 10:10:10
+        due:
+          type: date-time
+          description: due date time.
+          example: 2019/02/01 11:11:11
+        actualStart:
+          type: date-time
+          description: actual start deta time.
+          example: 2019/01/01 10:00:00
+        actualEnd:
+          type: date-time
+          description: actual start deta time.
+          example: 2019/01/15 11:11:11
+        status:
+          type: integer
+          format: int32
+          description: actual start deta time.
+          example: 1
+        version:
+          type: number
+          format: int64
+          description: entity version.
+          example: 2
+      xml:
+        name: Todo
