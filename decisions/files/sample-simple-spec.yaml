@@ -250,7 +250,11 @@ components:
         userStatus:
           type: integer
           format: int32
-          description: User Status
+        version:
+          type: integer
+          format: int64
+          description: entity version.
+          example: 2
       xml:
         name: User
     Todo:
