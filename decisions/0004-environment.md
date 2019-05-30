@@ -30,6 +30,11 @@ Javaでいうところの、`System.getEnv("Key")` 相当。
 
 少し気にする部分としては、`GoDotEnv`がDocker利用時に本当に必要になるのか？という部分。デプロイ時には、Docker起動の`--env-file`で`key=value`形式のファイルを指定すれば機能としては重複するはずなので考えもの
 
+## 他の可能性
+こんなものもある。
+
+[build時にtags指定でビルド対象のソースファイルを切り替える](https://qiita.com/ueokande/items/fac0d1219dbbc8f44db7#build-tags%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%9F%E3%83%93%E3%83%AB%E3%83%89%E3%81%AE%E5%88%87%E3%82%8A%E5%88%86%E3%81%91)
+
 ## 結果
 
 サンプル開発と議論の結果を後で書く
