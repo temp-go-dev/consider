@@ -37,4 +37,14 @@ Javaでいうところの、`System.getEnv("Key")` 相当。
 
 ## 結果
 
-サンプル開発と議論の結果を後で書く
+上記調査時に上がったGoDotEnvによる環境変数読み込みは  
+envfileがイメージに内蔵されてしまうため、環境変更時などにimageの再生成が必要となってしまう。  
+そのため下記方法で読み込む方法とする。  
+
+* 環境変数の読み込み  
+docker 起動時に`.env`ファイルを読み込む  
+`.env`ファイルは別のリポジトリを作成し、submoduleとして取り込む
+
+* コード上での環境変数利用方法  
+envconfigを利用し、構造体とのマッピングを行う。  
+利用方法は[サンプル参照](https://github.com/temp-go-dev/sample-api-gin/blob/master/config/config.go)
