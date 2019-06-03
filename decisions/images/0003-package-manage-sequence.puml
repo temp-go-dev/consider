@@ -1,0 +1,81 @@
+@startuml
+
+/' ---------------------------------------------- '/
+' 固定エリア
+
+'ヘッダー
+header
+
+'<font color=red>秘密とか入れるなら入れる</font>
+endheader
+
+'フッター
+right footer
+
+'<b>Copyright &#169; 2019 hogehoge All Right Reserved.</b>　
+endfooter
+
+/' ---------------------------------------------- '/
+' スタイルエリア
+
+'必要なら追加
+skinparam {
+defaultFontName Meiryo
+ArrowColor black
+Shadow none
+shadowing false
+'linetype ortho
+}
+skinparam sequence {
+ActorBorderColor black
+LifeLineBorderColor black
+LifeLineBackgroundColor black
+ParticipantBorderColor black
+ParticipantBackgroundColor black
+}
+skinparam participant {
+BackgroundColor White
+BorderColor Black
+}
+skinparam actor {
+BackgroundColor White
+BorderColor Black
+}
+skinparam note {
+BackgroundColor #dcf8f8
+BorderColor Black
+}
+
+/' ---------------------------------------------- '/
+' 描画エリア
+
+' 参考
+' http://plantuml.com/sequence-diagram
+
+participant "module作成者" as sup
+participant "module利用者" as con
+
+alt モジュール提供時
+  sup -> Git: github.com/user/repo Commit&Push
+  sup -> sup: git tag v0.0.1
+  sup -> Git: git push origin v0.0.1
+  Git -> Git: tag create
+  con -> Git: go get github.com/user/repo
+  con <-- Git: $GOPAH/pkg/modにcloneされる
+  con -> con: buildが走る（はず）
+  con -> con: モジュールを利用して開発可能
+end
+
+alt モジュール更新時
+  sup -> sup: development 
+  sup -> Git: github.com/user/repo Commit&Push
+  sup -> sup: git tag v0.0.1
+  sup -> Git: git push origin v0.0.1
+  Git -> Git: tag create
+  con -> Git: go get -u github.com/user/repo
+  con <-- Git: $GOPAH/pkg/modに最新版がcloneされる
+  con -> con: buildが走る（はず）
+  con -> con: モジュールを利用して開発可能
+end
+
+@enduml
