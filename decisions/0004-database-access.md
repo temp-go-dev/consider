@@ -91,7 +91,9 @@ func (s TodoService) GetAllTodo(uid string) ([]model.Todo, error) {
 
 ```
 
-model.go
+model.go  
+`gorm:"column:id"`のタグで明示的にDBのカラム名を指定できる。  
+[サポートされている構造体タグ](http://gorm.io/ja_JP/docs/models.html#%E6%A7%8B%E9%80%A0%E4%BD%93%E3%81%AE%E3%82%BF%E3%82%B0)  
 
 ```go
 // Todo TodoTBLの構造体
@@ -112,15 +114,24 @@ type Todo struct {
 ## GORMについて
 
 
-* コネクションプールなどの設定が可能。`database/sql`をラップしている。  
-// SetMaxIdleConnsはアイドル状態のコネクションプール内の最大数を設定  
-db.DB().SetMaxIdleConns(10)  
+* コネクションプールなどの設定項目は`database/sql`をラップしているため、そちらを使用する。  
+[コネクションプール関係の設定項目](https://golang.org/pkg/database/sql/#DB.SetConnMaxLifetime)
+  * 設定内容について解説されている参考サイト  
+    [Configuring sql.DB for Better Performance](https://www.alexedwards.net/blog/configuring-sqldb)  
+	[Re: Configuring sql.DB for Better Performance](http://dsas.blog.klab.org/archives/2018-02/configure-sql-db.html)
 
-* Timeout値などはDNSパラメータとして設定可能  [その他の設定可能値](https://github.com/go-sql-driver/mysql#dsn-data-source-name)    
+    * db.DB().SetMaxOpenConns(10)  
+    最大接続数を設定する。  
+    10と設定した場合は新しいコネクションが張られず、idle状態になるまで待つ。
 
-* gorm.open時のパラメータとして`?parseTime=true`が必要。  
-設定することでMySQL側でGOで扱える形式に変換してから取得できるようになる。  
-設定しない場合は`time.Time`型へのパース時にエラーが発生する。
+    * db.DB().SetMaxIdleConns(10)  
+    idleコネクションの最大数を設定する。
+
+    * db.DB().SetConnMaxLifetime(time.Hour)  
+    最初のコネクションが張られてから破棄するまでの時間を設定する。  
+	idle状態になってからの時間ではないので注意。  
+
+
 
 
 * 今回はMySQLドライバを使用したが、`database/sql`のオブジェクトであれば外部のドライバも使用可能らしい。[参考](https://github.com/jinzhu/gorm/issues/1009)
@@ -175,6 +186,19 @@ func GetDB() *gorm.DB {
 
 ```
 
+### GORM ⇔ Mysql 型の対応  
+型の対応についてのドキュメントは見つからなかったため、今回試した結果をまとめた。  
+※その他項目については要追加調査
+
+|Mysql     |Golang     |備考    |
+|---       |---        |---     |
+|char      |string     ||
+|varchar   |string     ||
+|text      |string     ||
+|datetime  |*time.Time |ポインタ参照にすることでNull項目の取得ができる。    |
+|datetime  |time.Time  |カラムがNullだった場合、`time.Time`型の初期値となる。|
+|int       |int        ||
+
 
 
 ## MySQLドライバー
@@ -182,6 +206,11 @@ func GetDB() *gorm.DB {
 * [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql#requirements)  
 MariaDBなどにも対応している
 
+* Timeout値などはDNSパラメータとして設定可能  [その他の設定可能値](https://github.com/go-sql-driver/mysql#dsn-data-source-name)  
+
+* GORMを使用する場合、`?parseTime=true`は必須。  
+設定することでMySQL側でGOで扱える形式に変換してから取得できるようになる。  
+設定しない場合は`time.Time`型へのパース時にエラーが発生する。
 
 
 
