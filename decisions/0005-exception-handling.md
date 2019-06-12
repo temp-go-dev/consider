@@ -3,8 +3,8 @@
 
 ## Golangの例外ハンドリング
 * `try~catch`はない。
-* 関数の戻り値の最後の値として[Errorインターフェース](https://golang.org/pkg/builtin/#error)の返却して例外ハンドリングを行う。
-
+* 関数の戻り値の最後の値として[Errorインターフェース](https://golang.org/pkg/builtin/#error)の返却し、その値が`nil`かどうかでハンドリングする。  
+* 関数定義時にはerrorを返却するようにし、呼び出し側はerrorをみてハンドリングするように組むとしてしまえば冗長になりそうだがわかりやすくはある。
 
 
 ## [pkg/errors](https://godoc.org/github.com/pkg/errors)  
@@ -17,10 +17,11 @@
   * `Errorf`  
 
 * エラー付与  
-エラーをスタックしたい場合、wrapを使用する。  
+エラーをスタックしたい場合、wrap、WithStackを使用する。  
+wrapはString文字列を付与してスタックすることができる。
   * `pkg/errors.Wrap`  
   * `Wrapf`  
-
+  * `WithStack`
 
 * スタックトレースの出力  
 スタックトレースを出力する  
@@ -149,12 +150,121 @@ func Transact(db *gorm.DB, txFunc func(*gorm.DB) (interface{}, error)) (data int
 ```
 
 
-
-# memo
-[Golangのエラーハンドリングの基本](https://qiita.com/shoichiimamura/items/13199f420ebaf0f0c37c#%E3%82%A8%E3%83%A9%E3%83%BC%E3%81%AB%E5%BF%9C%E3%81%98%E3%81%A6%E3%82%B9%E3%83%86%E3%83%BC%E3%82%BF%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E9%81%B8%E3%81%B6)
-
-
-[【Golang Error handling】エラーの種類によって処理を分けるBESTな方法](https://qiita.com/yoshinori_hisakawa/items/15bf0307245744deb4fc)
+## 複数の例外をハンドリングする
+一つの関数から複数のエラーが発生し、呼び出し元で発生したエラーによってハンドリングしたい場合、以下のように実装できる。
 
 
-[logging](https://re-engines.com/2018/11/05/go%E8%A8%80%E8%AA%9E%E3%81%AE%E3%82%A8%E3%83%A9%E3%83%BC%E3%83%8F%E3%83%B3%E3%83%89%E3%83%AA%E3%83%B3%E3%82%B0%E3%81%A8%E3%83%AD%E3%82%B0%E3%83%AD%E3%83%BC%E3%83%86%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3/)
+* Errorインターフェースの定義  
+  CheckError構造体を定義し、Error()メソッドを実装する。
+  MessageとCdのように構造体に複数の情報を持たせることも可能。
+  ```go
+  package service
+
+  // CheckError 入力値がなかった場合に投げるエラー
+  type CheckError struct {
+  	Message string
+  	Cd      string
+  }
+
+  func (e *CheckError) Error() string {
+  	return e.Message
+  }
+
+  // DbError DBエラーの場合に投げるエラー
+  type DbError struct {
+  	Message string
+  }
+
+  func (e *DbError) Error() string {
+  	return e.Message
+  }
+  ```
+
+* エラーのスロー  
+上記のErrorメソッドを実装した構造体を返却する。  
+`&CheckError{"error 登録対象がありません。", "E1001"}`    
+
+  ```go
+  // CreateTodosErrorHandling エラーハンドリングのサンプル
+  func (s TodoService) CreateTodosErrorHandling(todos model.Todos) ([]string, error) {
+  	db := db.GetDB().Begin()
+  	todoID := []string{}
+
+  	if len := len(todos.Todo); len == 0 {
+  		// 0件の場合エラー　★★★★★★★★★★★★★
+  		return nil, &CheckError{"error 登録対象がありません。", "E1001"} //★★★★★★★★★
+  	}
+
+  	// Transactにトランザクションを行いたい処理を実装した無名関数を渡す
+  	_, err := TransactNest(db, true, func(tx *gorm.DB) (interface{}, error) {
+  		// ↓↓↓ トランザクション対象の処理を記載 ↓↓↓
+
+  		// insert001 ネストしたトランザクション処理 Begin済みのDBを渡す
+  		todoID, _ = insert001(tx, todos)
+
+  		// 一意制約でエラーにする
+  		uuid := uuid.New()
+  		uuidStr := uuid.String()
+
+  		for _, todo := range todos.Todo {
+  			todo.ID = uuidStr
+  			errEvent := CreateTodo(tx, todo)
+  			if errEvent != nil {
+  				return nil, errors.Wrap(errEvent, "dbError")
+  				// return nil, errors.Wrap(errEvent, &DbError{"Dberror"})
+  			}
+  			todoID = append(todoID, uuidStr)
+  		}
+  		return todoID, nil
+  		//↑↑↑ トランザクション対象の処理を記載 ↑↑↑
+  	})
+  	if err != nil {
+  		return nil, errors.Wrap(err, "トランザクション処理でエラー")
+  	}
+  	return todoID, nil
+  }
+  ```
+
+* エラーの型から何エラーなのか判定する。
+
+  ```go
+  // CreateErrorHandling action: Create /todos
+  func (pc TodoController) CreateErrorHandling(c *gin.Context) {
+  	logger := config.GetLogger()
+
+  	todos := model.Todos{}
+  	if err := c.BindJSON(&todos); err != nil {
+  		logger.Error("Jsonパースエラー", zap.Error(err))
+  		c.JSON(http.StatusBadRequest, gin.H{"status": "BadRequest"})
+  		return
+  	}
+  	var s service.TodoService
+  	logger.Info("todo作成を実行します(CreateTodosErrorHandling)")
+  	p, err := s.CreateTodosErrorHandling(todos)
+
+  	if err != nil {
+  		switch e := err.(type) {  // ★★★★★★★★★★★★★★★★★★★★★★
+  		case *service.CheckError: // 400エラー
+			  logger.Error("error", zap.String(e.Cd, e.Message))
+			  c.JSON(http.StatusBadRequest, gin.H{"status": "BadRequest"})
+  		default: // 500エラー
+  			logger.Error("error", zap.String("E001", "CreateTodosTranNest処理でエラー発生"), zap.Error(err))
+  			c.JSON(http.StatusInternalServerError, gin.H{"status": "Internal Server Error", "errMessage": err})
+  		}
+  	} else {
+  		c.JSON(http.StatusOK, gin.H{"createdTodoId": p})
+  	}
+  }
+  ```
+
+
+## 参考サイト
+* [Golangのエラーハンドリングの基本](https://qiita.com/shoichiimamura/items/13199f420ebaf0f0c37c#%E3%82%A8%E3%83%A9%E3%83%BC%E3%81%AB%E5%BF%9C%E3%81%98%E3%81%A6%E3%82%B9%E3%83%86%E3%83%BC%E3%82%BF%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E9%81%B8%E3%81%B6)
+
+* [エラー・ハンドリングについて（追記あり）](https://text.baldanders.info/golang/error-handling/)
+
+* [Error handling and Go](https://blog.golang.org/error-handling-and-go)
+
+* [【Golang Error handling】エラーの種類によって処理を分けるBESTな方法](https://qiita.com/yoshinori_hisakawa/items/15bf0307245744deb4fc)
+
+* [golangでerrorハンドリングする個人的な最適解 ](https://gist.github.com/hakamata-rui/17baa6508baa0dafe8e3c41df05d261a)
