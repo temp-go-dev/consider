@@ -11,7 +11,7 @@ Date: 2019-05-23
 ### 調査したIDE
 * Atom  
 * Visual Studio Code  
-* GoLand(一部有料)
+* GoLand(有料(30日trial))
 * Eclipse
 
 ### ほしい機能の観点
