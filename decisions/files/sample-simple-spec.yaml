@@ -109,7 +109,7 @@ paths:
         - user
       summary: Get user list.
       description: get user list.
-      operationId: list
+      operationId: userList
       responses:
         "200":
           description: user list response.
@@ -125,7 +125,7 @@ paths:
         - user
       summary: Create TO-DO
       description: Create todo.
-      operationId: create
+      operationId: userCreate
       parameters:
         - name: id
           in: path
@@ -145,7 +145,7 @@ paths:
         - user
       summary: Read TO-DO.
       description: read todo.
-      operationId: read
+      operationId: userRead
       parameters:
         - name: id
           in: path
@@ -164,7 +164,7 @@ paths:
         - user
       summary: Update TO-DO
       description: update todo.
-      operationId: update
+      operationId: userUpdate
       parameters:
         - name: id
           in: path
@@ -184,7 +184,7 @@ paths:
         - user
       summary: Delete TO-DO.
       description: delete todo.
-      operationId: delete
+      operationId: userDelete
       parameters:
         - name: id
           in: path
