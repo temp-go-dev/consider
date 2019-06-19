@@ -8,13 +8,26 @@
 
 Gin(v1.4.0)は内部で[https://github.com/go-playground/validator/tree/v8.18.2](https://github.com/go-playground/validator/tree/v8.18.2)を使用している。
 
+## go-playground/validator
+* POST、PUTリクエストごとにタグをつけれるため、1つの構造体に複数バリデーションタグをつけれる。(実装例参照)  
+* 使用可能なタグは[ここ](https://godoc.org/gopkg.in/go-playground/validator.v8#hdr-Baked_In_Validators_and_Tags)を参照  
+* タグの自作も可能。[(参考)](https://qiita.com/RunEagler/items/ad79fc860c3689797ccc#%E3%83%90%E3%83%AA%E3%83%87%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E5%86%85%E5%AE%B9%E3%82%92%E8%87%AA%E4%BD%9C%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)  
+* タグの自作で正規表現を適用することも可能。  
+ただし、Golangの正規表現は性能面で推奨されていない。   
+遅いのは正規表現のコンパイルだから初期処理時にコンパイルしておけばさほど気にならないらしい。(要調査)  
+  * 参考：[regexpとの付き合い方 〜 Go言語標準の正規表現ライブラリのパフォーマンスとアルゴリズム〜](https://medium.com/eureka-engineering/regexp%E3%81%A8%E3%81%AE%E4%BB%98%E3%81%8D%E5%90%88%E3%81%84%E6%96%B9-go%E8%A8%80%E8%AA%9E%E6%A8%99%E6%BA%96%E3%81%AE%E6%AD%A3%E8%A6%8F%E8%A1%A8%E7%8F%BE%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%81%AE%E3%83%91%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%A8%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0-984b6cbeeb2b)   
+  * 参考：[Golangの正規表現がどれぐらいおそいのかをPythonと比較してみた話](https://qiita.com/tj8000rpm/items/b92d7617883639a3e714)  
+* 構造体に対してタグをつけてバリデーションを行うため、構造体でなければならない。
+
+
 
 ## 実装(go-playground/validator)
 
 * 構造体のタグに指定する。  
 `v-post:"required"`  
 POSTやPUTリクエストで同じ構造体を使用しているため、POST用のタグとして`v-post`を定義している  
-使用可能なタグは[ここ](https://godoc.org/gopkg.in/go-playground/validator.v8#hdr-Baked_In_Validators_and_Tags)を参照
+
+
   ```go
     // User ユーザTBLの構造体
   type User struct {
