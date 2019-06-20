@@ -83,9 +83,12 @@ func TestParseInt64(t *testing.T) {
 
   1.testingパッケージのみ使う  
   
-  メリット:　標準パッケージのみでいける。
-  デメリット：テストの判断はif文を書かなきゃならない。  
-　　　　　　実装の置き換えしかできない
+- メリット
+  - 標準パッケージのみでいける。
+- デメリット  
+  - 実装の置き換えしかできない 
+  - 呼ばれた回数などのテストをする場合mockインターフェースの定義が複雑になる
+
 sampleコード 
 ```go
 //実装
@@ -144,20 +147,28 @@ func TestGetGists2(t *testing.T) {
 		t.Fatal("aaaaa")
 	}
 }
-
 ```
 
 　2.gomockパッケージを使う  
-メリット：コマンド１発でモックが生成でき、生成したモックを使ってテストできる。 
-使用コマンド例:  mockgen -source sample.go -destination mock_sample/mock_sample.go
+- メリット
+  - コマンド１発でモックが生成でき、生成したモックを使ってテストできる。(使用コマンド例:  mockgen -source sample.go -destination mock_sample/)
 
-デメリット:生ファイルが増えるため、管理がしにくくなる恐れがある。
+- デメリット  
+  - ファイルが増えるため、管理がしにくくなる恐れがある。
+
 
 
   3.testifyパッケージのみ使う  
-  メリット: mockのほかにassert,Suiteなどかもあるため、テストが多少簡易化できる。また、実行回数なども確認できる。
-  デメリット：mockの実装は１とあんまり変わらない
-  ```go
+
+- メリット
+  - mockのほかにassert,Suiteなどかもあるため、テストが多少簡易化できる
+  - 実行回数なども簡単に確認できる
+
+- デメリット  
+  - mockの実装は１とあんまり変わらない
+  - 公式ではない
+  
+```go
 //実装
 // お天気クライアントのinterface
 type WeatherClient interface {
